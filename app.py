@@ -40,9 +40,9 @@ def scrapper(url):
 
     driver.get(url)
     time.sleep(2)
-    # search_box = driver.find_element_by_id("findTypeaheadInput")   
-    # ''' pass search keyword to search field '''
-    # search_box.send_keys(search_keyword)
+    search_box = driver.find_element_by_id("findTypeaheadInput")   
+    ''' pass search keyword to search field '''
+    search_box.send_keys(search_keyword)
 
     # location = driver.find_element_by_id("nearTypeaheadInput")
     # location.send_keys(Keys.CONTROL, 'a')
@@ -82,15 +82,21 @@ def scrapper(url):
             print(web_url.text) 
             bbb_website.append(web_url.text)
             
+        # def Check_duplicate(x):
+        #     _size = len(x) 
+        #     new_url_list = [] 
+        #     for i in range(_size): 
+        #         k = i + 1
+        #         for j in range(k, _size): 
+        #             if x[i] == x[j] and x[i] not in new_url_list: 
+        #                 new_url_list.append(x[i]) 
+        #     return new_url_list or "Searching url"
         def Check_duplicate(x):
-            _size = len(x) 
-            new_url_list = [] 
-            for i in range(_size): 
-                k = i + 1
-                for j in range(k, _size): 
-                    if x[i] == x[j] and x[i] not in new_url_list: 
-                        new_url_list.append(x[i]) 
-            return new_url_list or "Searching url"
+            new_url_list = []
+            for i in x: 
+                if i not in new_url_list: 
+                    new_url_list.append(i)
+            return new_url_list or "Searching url"    
         # This code is contributed by Sandeep_anand in GeeksforGeeks
         print (Check_duplicate(bbb_website))
         bbb_website_links = Check_duplicate(bbb_website)
@@ -98,8 +104,12 @@ def scrapper(url):
         
     print("All links are collected now opening the links...")
 
-    
-
+    def Check_duplicate_emails(x):
+        new_emails_list = []
+        for i in x: 
+            if i not in new_emails_list: 
+                new_emails_list.append(i)
+        return new_emails_list
     
     for links in range(len(bbb_website_links)):
 
@@ -114,10 +124,11 @@ def scrapper(url):
             contact = driver.find_element_by_xpath("//a[contains(text(),'contact')]")    
             driver.execute_script("arguments[0].click();", contact)      
             html = driver.page_source
-            EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
-            emails = re.findall(EMAIL_REGEX, html)
-            bbb_emails.append(emails)            
-            print(emails)
+            EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]+'
+            emails = re.findall(EMAIL_REGEX, html)            
+            filtered_email = Check_duplicate_emails(emails)
+            bbb_emails.append(filtered_email)            
+            print('filtered:',filtered_email)        
         except NoSuchElementException:
             pass
             # print("small contact not found")
@@ -126,10 +137,11 @@ def scrapper(url):
             Contact = driver.find_element_by_xpath("//a[contains(text(),'Contact')]")   
             driver.execute_script("arguments[0].click();", Contact)         
             html = driver.page_source
-            EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z-.]+'
+            EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]+'
             emails = re.findall(EMAIL_REGEX, html)
-            bbb_emails.append(emails)             
-            print(emails)
+            filtered_email = Check_duplicate_emails(emails)
+            bbb_emails.append(filtered_email)             
+            print(filtered_email)
 
         except NoSuchElementException:
             pass
@@ -144,36 +156,35 @@ def scrapper(url):
             html = driver.page_source
             EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
             emails = re.findall(EMAIL_REGEX, html)
-            bbb_emails.append(emails)             
-            print(emails)
+            filtered_email = Check_duplicate_emails(emails)
+            bbb_emails.append(filtered_email)              
+            print(filtered_email)
 
         except NoSuchElementException:
             pass
             # print("CAPS contact not found")   
             
             # print(match.groups()[0])
-                        
+                       
           
             
-           
-           
+          
 
 search_keyword = str(input("What Business do you want to search ? =>"))
 print("[+] Location is set to San Francisco, CA")
 # page_no = int(input("How many page do you want to scrape ? =>"))
 
-# url = "https://www.bbb.org"
+# # url = "https://www.bbb.org"
 
-for i in range(6,10):
+for i in range(0,10):
     page_no = i+1
-    url = "https://www.bbb.org/search?find_country=USA&find_loc=San%20Francisco%2C%20CA&find_text="+search_keyword+"&page="+str(page_no)
-    # print(driver.current_url)
+    url = "https://www.bbb.org/search?find_country=USA&find_loc=San%20Francisco%2C%20CA&find_text="+search_keyword+"&page="+str(page_no)   
     scrapper(url)
 
     # print("[+] Creating CSV file...")
     # print(bbb_website_links)
-    print("Total links:", len(bbb_website_links))
-    print("Total website:",len(bbb_website))
+    # print("Total links:", len(bbb_website_links))
+    # print("Total website:",len(bbb_website))
 
 
 
