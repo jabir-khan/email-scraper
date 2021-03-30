@@ -72,7 +72,7 @@ def scrapper(url):
   
     for x in range(len(org_names)):        
         bbb_org_name.append(org_names[x].text)
-        print('org name is:', bbb_org_name)
+        # print('org name is:', bbb_org_name)
         # bbb_phone.append(phones[phone].a.text)
         ''' extract all the business links from org_names '''
         link = org_names[x]['href']
@@ -97,30 +97,9 @@ def scrapper(url):
             return new_url_list or "Searching url"    
         # This code is contributed by Sandeep_anand in GeeksforGeeks
         print (Check_duplicate(bbb_website))
-        bbb_website_links = Check_duplicate(bbb_website)
+        bbb_website_links = Check_duplicate(bbb_website)       
 
-        
-
-    print("All links are collected now opening the links...")
-
-   
-    def Check_duplicate_emails(x):
-        new_emails_list = []
-        for i in x: 
-            if i not in new_emails_list: 
-                new_emails_list.append(i)
-        return new_emails_list
-    
-    for links in range(len(bbb_website_links)):
-
-        ''' make a contact page url '''
-        try:
-            driver.get(bbb_website_links[links])        
-            time.sleep(3)
-            html = driver.page_source
-            soup = BeautifulSoup(html, 'html.parser')
-        except:
-            pass            
+           
 
     print("All links are collected now opening the links...")
 
@@ -150,8 +129,11 @@ def scrapper(url):
             EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]+'
             emails = re.findall(EMAIL_REGEX, html)            
             filtered_email = Check_duplicate_emails(emails)
-            bbb_emails.append(filtered_email)            
-            print('filtered:',filtered_email)        
+            # using list comprehension            
+            email_listToString = ', '.join(map(str, filtered_email))   
+            bbb_emails.append(email_listToString)
+            print('Emails: ', email_listToString)             
+                  
         except NoSuchElementException:
             pass
             # print("small contact not found")
@@ -163,8 +145,11 @@ def scrapper(url):
             EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z.]+'
             emails = re.findall(EMAIL_REGEX, html)
             filtered_email = Check_duplicate_emails(emails)
-            bbb_emails.append(filtered_email)             
-            print(filtered_email)
+            # using list comprehension            
+            email_listToString = ', '.join(map(str, filtered_email))   
+            bbb_emails.append(email_listToString)
+            print('Emails: ', email_listToString)             
+          
 
         except NoSuchElementException:
             pass
@@ -172,21 +157,22 @@ def scrapper(url):
 
 
         try:
-            CONTACT = driver.find_element_by_xpath("//a[contains(text(),'CONTACT')]")            
-            # if type(Contact) == "<class 'selenium.webdriver.remote.webelement.WebElement'>":
+            CONTACT = driver.find_element_by_xpath("//a[contains(text(),'CONTACT')]")   
             # CONTACT.click()
             driver.execute_script("arguments[0].click();", CONTACT)         
             html = driver.page_source
             EMAIL_REGEX = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
             emails = re.findall(EMAIL_REGEX, html)
             filtered_email = Check_duplicate_emails(emails)
-            bbb_emails.append(filtered_email)              
-            print(filtered_email)
+            # using list comprehension            
+            email_listToString = ', '.join(map(str, filtered_email)) 
+            bbb_emails.append(email_listToString)
+            print('Emails: ', email_listToString)             
+          
 
         except NoSuchElementException:
             pass
             # print("CAPS contact not found")   
-            
             # print(match.groups()[0])
                         
             
@@ -197,23 +183,20 @@ search_keyword = str(input("What Business do you want to search ? =>"))
 print("[+] Location is set to San Francisco, CA")
 # page_no = int(input("How many page do you want to scrape ? =>"))
 
-# url = "https://www.bbb.org"
 
-
-
-for i in range(0,2):
+for i in range(0,1):
     page_no = i+1
     url = "https://www.bbb.org/search?find_country=USA&find_loc=San%20Francisco%2C%20CA&find_text="+search_keyword+"&page="+str(page_no)   
     scrapper(url)
 
-    # print("[+] Creating CSV file...")
+    print("[+] Creating CSV file...")
     # print(bbb_website_links)
-    # print("Total links:", len(bbb_website_links))
+    # print("Total links:", len(bbb_org_name))
     # print("Total website:",len(bbb_website))
 
 
 
-    data = {'Email':bbb_emails}
+    data = {'Email': bbb_emails}
     df = pd.DataFrame(data=data, columns = ['Email'])
     df.to_csv('bbb_'+search_keyword+'_'+str(page_no)+'.csv') 
 
